@@ -1239,7 +1239,7 @@
         🌙 Modo oscuro
       </button>
 
-      <! --- <button id="resetBtn" class="danger">🗑️ Borrar planificación</button>-->
+      <!--- <button id="resetBtn" class="danger">🗑️ Borrar planificación</button>-->
 
       <span id="fileStatus" class="status"> Sin archivo cargado </span>
     </div>
@@ -2222,106 +2222,7 @@ if(code.endsWith("L")){
             Selecciona un operador para ver estadísticas.
         </p>
     `;
-});
 
-        const operatorCount = operators.length || 1;
-        const averageAssignments = totalAssignments / operatorCount;
-        const coveredDayCount = coveredDates.size;
-        const plannedDayCount = plannedDates.size;
-        const uncoveredDayCount = Math.max(
-          0,
-          plannedDayCount - coveredDayCount,
-        );
-        const coveragePercent = plannedDayCount
-          ? (coveredDayCount / plannedDayCount) * 100
-          : 0;
-
-        const cards = [
-          ["MA", "Mañana Arteixo", "var(--ma)"],
-          ["ML", "Mañana Laracha", "var(--ml)"],
-          ["TA", "Tarde Arteixo", "var(--ta)"],
-          ["TL", "Tarde Laracha", "var(--tl)"],
-          ["NA", "Noche Arteixo", "var(--na)"],
-          ["NL", "Noche Laracha", "var(--nl)"],
-          ["LIBRE", "Días libres", "#cbd5e1"],
-        ];
-
-        const periodLabel =
-          statsStartDate || statsEndDate
-            ? `Periodo: ${statsStartDate || "inicio"} — ${statsEndDate || "actualidad"}`
-            : `Año completo · ${getYear()} · todos los operadores`;
-
-        $("statsPanel").innerHTML = `
-        <h3 class="panel-title">📊 Resumen conjunto de cobertura</h3>
-        <div class="stats-filter">
-            <div class="control">
-                <label for="statsStartDate">Desde el día</label>
-                <input type="date" id="statsStartDate" value="${statsStartDate}">
-            </div>
-            <div class="control">
-                <label for="statsEndDate">Hasta el día</label>
-                <input type="date" id="statsEndDate" value="${statsEndDate}">
-            </div>
-            <button type="button" id="applyStatsFilter">Aplicar fechas</button>
-            <button type="button" id="clearStatsFilter" class="secondary">Ver año completo</button>
-        </div>
-        <p class="stats-period">${escapeHTML(periodLabel)}</p>
-
-        <div class="summary">
-            <div class="summary-card" style="--accent:var(--accent)">
-                <small>Promedio de días contabilizados por operador</small>
-                <strong>${averageAssignments.toFixed(1).replace(".", ",")}</strong>
-                <small>${operatorCount} operadores</small>
-            </div>
-            <div class="summary-card" style="--accent:#16a34a">
-                <small>Días con al menos un turno asignado</small>
-                <strong>${coveredDayCount}</strong>
-                <small>De ${plannedDayCount} días planificados</small>
-            </div>
-            <div class="summary-card" style="--accent:${uncoveredDayCount ? "#dc2626" : "#16a34a"}">
-                <small>Días sin ningún turno asignado</small>
-                <strong>${uncoveredDayCount}</strong>
-                <small>Cobertura: ${coveragePercent.toFixed(1).replace(".", ",")}%</small>
-            </div>
-        </div>
-
-        <h4 style="margin:18px 0 10px">Distribución total de asignaciones</h4>
-        <div class="summary">
-            ${cards
-              .map(
-                ([code, name, color]) => `
-                <div class="summary-card" style="--accent:${color}">
-                    <small>${name}</small>
-                    <strong>${totals[code]}</strong>
-                    <small>${code} · media ${((totals[code] || 0) / operatorCount).toFixed(1).replace(".", ",")} por operador</small>
-                </div>
-            `,
-              )
-              .join("")}
-        </div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:0">
-            El promedio indica la carga media de asignaciones por operador. La cobertura cuenta cada fecha una sola vez si al menos una persona tiene un turno de trabajo asignado; no equivale a comprobar que estén cubiertos todos los puestos o turnos necesarios.
-        </p>
-    `;
-
-        $("applyStatsFilter").addEventListener("click", () => {
-          const from = $("statsStartDate").value;
-          const to = $("statsEndDate").value;
-          if (from && to && from > to) {
-            alert("La fecha inicial no puede ser posterior a la fecha final.");
-            return;
-          }
-          statsStartDate = from;
-          statsEndDate = to;
-          renderStatsAll();
-        });
-
-        $("clearStatsFilter").addEventListener("click", () => {
-          statsStartDate = "";
-          statsEndDate = "";
-          renderStatsAll();
-        });
-      }
       function normalizeShiftPattern(code) {
         code = String(code || "")
           .trim()
@@ -2562,7 +2463,7 @@ if(code.endsWith("L")){
    BORRAR PLANIFICACIÓN
 ========================================= */
 
-      $("resetBtn").addEventListener("click", function () {
+      /* $("resetBtn").addEventListener("click", function () {
         const confirmDelete = confirm(
           "¿Quieres borrar la planificación guardada?\n\n" +
             "Tendrás que volver a cargar el CSV.",
@@ -2628,7 +2529,7 @@ if(code.endsWith("L")){
             El calendario aparecerá aquí.
         </div>
     `;
-      });
+      }); */
 
       /* =========================================
    INICIO AUTOMÁTICO
