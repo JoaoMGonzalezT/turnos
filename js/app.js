@@ -1598,10 +1598,10 @@ $("resetBtn").addEventListener("click", function () {
     })
     .then((csv) => {
       csvContent = csv;
-
-      rows = parseCSV(csv);
-       // Seleccionar automáticamente el año y mes actuales
+// Seleccionar automáticamente el año y mes actuales
       $("year").value = getToday().getFullYear();
+      rows = parseCSV(csv);
+       
 
       detectMonths();
 
