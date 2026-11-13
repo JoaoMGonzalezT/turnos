@@ -96,28 +96,32 @@ function getToday() {
 }
 
 function selectCurrentMonthByDefault() {
-  const today = getToday();
+  const today = new Date();
+
   const current = months.find(
     (month) =>
       month.index === today.getMonth() && month.year === today.getFullYear(),
   );
+
   selectedMonthFilter = current ? `${current.year}-${current.index}` : "all";
-  const filter = $("monthFilter");
-  if (filter) filter.value = selectedMonthFilter;
+
+  updateMonthFilterOptions();
 }
 
 function scrollToTodayAfterRender() {
   requestAnimationFrame(() => {
+    const today = new Date();
+
+    const monthElement = $(`month-${today.getFullYear()}-${today.getMonth()}`);
+
     const todayElement = $("today");
-    const monthElement = $(
-      `month-${getToday().getFullYear()}-${getToday().getMonth()}`,
-    );
+
     const target = todayElement || monthElement;
+
     if (target) {
       target.scrollIntoView({
-        behavior: "smooth",
+        behavior: "auto",
         block: todayElement ? "center" : "start",
-        inline: "center",
       });
     }
   });
@@ -447,8 +451,6 @@ function fillOperators() {
   // Por defecto se muestra el cuadrante conjunto de todos los operadores.
   currentOperator = null;
   $("operator").value = "";
-
-  render();
 }
 
 $("operator").addEventListener("change", function () {
@@ -763,22 +765,26 @@ function updateMonthFilterOptions() {
   if (!select) return;
 
   const available = getAvailableCalendarMonths();
-  const previousValue = selectedMonthFilter;
 
   select.innerHTML = '<option value="all">Todos los meses disponibles</option>';
 
   available.forEach((month) => {
     const option = document.createElement("option");
+
     option.value = `${month.year}-${month.index}`;
     option.textContent = `${month.name} ${month.year}`;
+
     select.appendChild(option);
   });
 
-  const stillExists = [...select.options].some(
-    (option) => option.value === previousValue,
+  const exists = available.some(
+    (month) => `${month.year}-${month.index}` === selectedMonthFilter,
   );
 
-  selectedMonthFilter = stillExists ? previousValue : "all";
+  if (!exists && selectedMonthFilter !== "all") {
+    selectedMonthFilter = "all";
+  }
+
   select.value = selectedMonthFilter;
 }
 
@@ -1527,7 +1533,7 @@ $("resetBtn").addEventListener("click", function () {
   currentOperator = null;
   csvContent = "";
 
-  /*$("csvFile").value = "";*/
+  $("csvFile").value = "";
 
   $("operator").innerHTML = '<option value="">Carga un CSV primero</option>';
 
@@ -1581,47 +1587,54 @@ $("resetBtn").addEventListener("click", function () {
     const savedTheme = localStorage.getItem(THEME_KEY);
     applyTheme(savedTheme === "dark");
 
-    const savedYear = localStorage.getItem(YEAR_KEY);
-
-    if (savedYear) {
-      $("year").value = savedYear;
-    }
+    // Siempre utilizar el año actual al abrir la página.
+    $("year").value = new Date().getFullYear();
   } catch (error) {
     console.warn(error);
   }
 
-  // Primero intenta cargar el CSV publicado en GitHub
   fetch("horarios2026.csv")
     .then((r) => {
-      if (!r.ok) throw new Error("No existe CSV remoto");
+      if (!r.ok) {
+        throw new Error("No existe CSV remoto");
+      }
+
       return r.text();
     })
     .then((csv) => {
       csvContent = csv;
-// Seleccionar automáticamente el año y mes actuales
-      $("year").value = getToday().getFullYear();
+
       rows = parseCSV(csv);
-       
-  selectCurrentMonthByDefault();
+
+      $("year").value = new Date().getFullYear();
 
       detectMonths();
 
       fillOperators();
 
+      // Seleccionar automáticamente el mes actual.
+      selectCurrentMonthByDefault();
+
+      // Activar controles.
       $("todayBtn").disabled = false;
       $("printBtn").disabled = false;
       $("exportBtn").disabled = false;
       $("monthFilter").disabled = false;
 
+      // Dibujar el calendario.
       render();
 
+      // Ir visualmente al mes y día actual.
       scrollToTodayAfterRender();
 
       $("fileStatus").textContent = "✓ CSV cargado automáticamente";
+
+      updateStorageStatus(false);
     })
-    .catch(() => {
-      // Si no existe el CSV publicado
-      // usa el guardado local
+    .catch((error) => {
+      console.error("Error cargando CSV remoto:", error);
+
+      // Si falla GitHub, intentar recuperar la planificación local.
       restoreCSV();
     });
 })();
