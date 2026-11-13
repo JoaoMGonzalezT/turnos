@@ -1239,7 +1239,7 @@
         🌙 Modo oscuro
       </button>
 
-      <button id="resetBtn" class="danger">🗑️ Borrar planificación</button>
+      <! --- <button id="resetBtn" class="danger">🗑️ Borrar planificación</button>-->
 
       <span id="fileStatus" class="status"> Sin archivo cargado </span>
     </div>
@@ -1804,13 +1804,17 @@
 
       function calculateStats(row, startDate = "", endDate = "") {
         const stats = {
-          MA: 0,
-          ML: 0,
-          TA: 0,
-          TL: 0,
-          NA: 0,
-          NL: 0,
-          LIBRE: 0,
+          MA:0,
+    ML:0,
+    TA:0,
+    TL:0,
+    NA:0,
+    NL:0,
+
+    ARTEIXO:0,
+    LARACHA:0,
+
+    LIBRE:0
         };
 
         let totalDays = 0;
@@ -1826,6 +1830,11 @@
 
           data.forEach((code, day) => {
             const date = new Date(month.year, month.index, day);
+            const today = new Date();
+
+if(date > today){
+    return;
+}
 
             if (start && date < start) return;
             if (end && date > end) return;
@@ -1834,6 +1843,13 @@
 
             if (code && SHIFTS[code]) {
               stats[code]++;
+              if(code.endsWith("A")){
+    stats.ARTEIXO++;
+}
+
+if(code.endsWith("L")){
+    stats.LARACHA++;
+}
             } else {
               stats.LIBRE++;
             }
@@ -1854,6 +1870,8 @@
           ["NA", "Noche Arteixo", "var(--na)"],
           ["NL", "Noche Laracha", "var(--nl)"],
           ["LIBRE", "Días libres", "#cbd5e1"],
+          ["ARTEIXO","Días Arteixo","#0284c7"],
+["LARACHA","Días Laracha","#059669"],
         ];
 
         const periodLabel =
@@ -2197,40 +2215,14 @@
       }
 
       function renderStatsAll() {
-        const totals = { MA: 0, ML: 0, TA: 0, TL: 0, NA: 0, NL: 0, LIBRE: 0 };
-        let totalAssignments = 0;
-        const coveredDates = new Set();
-        const plannedDates = new Set();
-        const selectedYear = getYear();
-        const start = statsStartDate
-          ? new Date(statsStartDate + "T00:00:00")
-          : null;
-        const end = statsEndDate ? new Date(statsEndDate + "T23:59:59") : null;
+        $("statsPanel").innerHTML = `
+        <h3 class="panel-title">📊 Resumen</h3>
 
-        operators.forEach((operator) => {
-          const result = calculateStats(
-            operator.row,
-            statsStartDate,
-            statsEndDate,
-          );
-          Object.keys(totals).forEach(
-            (key) => (totals[key] += result.stats[key] || 0),
-          );
-          totalAssignments += result.totalDays;
-
-          months.forEach((month) => {
-            if (!start && !end && month.year !== selectedYear) return;
-            const data = getMonthData(month, operator.row);
-            data.forEach((code, day) => {
-              const date = new Date(month.year, month.index, day);
-              if (start && date < start) return;
-              if (end && date > end) return;
-              const key = `${month.year}-${month.index}-${day}`;
-              plannedDates.add(key);
-              if (code && SHIFTS[code]) coveredDates.add(key);
-            });
-          });
-        });
+        <p style="color:var(--muted)">
+            Selecciona un operador para ver estadísticas.
+        </p>
+    `;
+});
 
         const operatorCount = operators.length || 1;
         const averageAssignments = totalAssignments / operatorCount;
