@@ -1602,6 +1602,7 @@ $("resetBtn").addEventListener("click", function () {
       $("year").value = getToday().getFullYear();
       rows = parseCSV(csv);
        
+  selectCurrentMonthByDefault();
 
       detectMonths();
 
