@@ -2234,20 +2234,47 @@
         try {
           const savedTheme = localStorage.getItem(THEME_KEY);
           applyTheme(savedTheme === "dark");
+
           const savedYear = localStorage.getItem(YEAR_KEY);
 
-          if (
-            savedYear &&
-            Number(savedYear) >= 2000 &&
-            Number(savedYear) <= 2100
-          ) {
+          if (savedYear) {
             $("year").value = savedYear;
           }
         } catch (error) {
-          console.warn("No se pudo recuperar el año.", error);
+          console.warn(error);
         }
 
-        restoreCSV();
+        // Primero intenta cargar el CSV publicado en GitHub
+        fetch("horarios2026.csv")
+          .then((r) => {
+            if (!r.ok) throw new Error("No existe CSV remoto");
+            return r.text();
+          })
+          .then((csv) => {
+            csvContent = csv;
+
+            rows = parseCSV(csv);
+
+            detectMonths();
+
+            fillOperators();
+
+            $("todayBtn").disabled = false;
+            $("printBtn").disabled = false;
+            $("exportBtn").disabled = false;
+            $("monthFilter").disabled = false;
+
+            render();
+
+            scrollToTodayAfterRender();
+
+            $("fileStatus").textContent = "✓ CSV cargado automáticamente";
+          })
+          .catch(() => {
+            // Si no existe el CSV publicado
+            // usa el guardado local
+            restoreCSV();
+          });
       })();
     </script>
   </body>
