@@ -225,12 +225,12 @@ function restoreCSV() {
     updateStorageStatus(false);
   }
 }
-
+/*
 function updateStorageStatus(saved) {
   $("storageStatus").innerHTML = saved
     ? '<span class="storage-status">● Planificación guardada en este dispositivo</span>'
     : '<span class="storage-status" style="background:#f1f5f9;color:#64748b">○ Sin planificación guardada</span>';
-}
+}*/
 
 /* =========================================
    LECTOR CSV
@@ -861,7 +861,15 @@ function renderCalendar(row) {
         cell.id = "today";
       }
 
-      cell.innerHTML = `<div class="daynum">${day}</div>`;
+      /*cell.innerHTML = `<div class="daynum">${day}</div>`;*/
+      const date = new Date(year, month.index, day);
+
+      const weekday = date.toLocaleDateString("es-ES", { weekday: "short" });
+
+      cell.innerHTML = `
+    <div class="daynum">${day}</div>
+    <div class="weekday">${weekday}</div>
+`;
 
       if (code === null) {
         cell.innerHTML += `<div class="free-label">Sin datos</div>`;
@@ -1009,14 +1017,26 @@ function renderAllOperatorsCalendar() {
                 <table class="all-operators-table">
                     <thead><tr>
                         <th class="operator-name">Operador</th>
-                        ${Array.from({ length: totalDays }, (_, i) => {
-                          const day = i + 1;
-                          const isToday =
-                            day === getToday().getDate() &&
-                            month.index === getToday().getMonth() &&
-                            month.year === getToday().getFullYear();
-                          return `<th class="${isToday ? "today-column" : ""}">${day}</th>`;
-                        }).join("")}
+                         ${Array.from({ length: totalDays }, (_, i) => {
+                           const day = i + 1;
+
+                           const isToday =
+                             day === getToday().getDate() &&
+                             month.index === getToday().getMonth() &&
+                             month.year === getToday().getFullYear();
+
+                           const weekday =
+                             WEEKDAYS[
+                               new Date(month.year, month.index, day).getDay()
+                             ];
+
+                           return `
+    <th class="${isToday ? "today-column" : ""}">
+      <div class="header-weekday">${weekday}</div>
+      <div class="header-day">${day}</div>
+    </th>
+  `;
+                         }).join("")}
                     </tr></thead>
                     <tbody>
         `;
