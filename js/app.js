@@ -221,7 +221,7 @@ function restoreCSV() {
     updateStorageStatus(true);
   } catch (error) {
     console.error("Error recuperando CSV:", error);
-    $("fileStatus").textContent = "⚠ Error recuperando planificación";
+    $("fileStatus").textContent = " ";
     updateStorageStatus(false);
   }
 }
