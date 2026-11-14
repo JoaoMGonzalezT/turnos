@@ -202,6 +202,27 @@ select:focus {
   margin-top: 5px;
 }
 
+.weekday {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.header-weekday {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.8;
+  line-height: 1;
+}
+
+.header-day {
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
 .next-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -678,7 +699,7 @@ body.dark-mode .empty-state {
 .all-operators-table th.today-column {
   background: #fee2e2;
   color: #991b1b;
-  border-top: 2px solid #ef4444;
+  border-top: 2px solid #ff0000;
 }
 .all-operators-table td.today-column {
   box-shadow: inset 0 0 0 2px #ef4444;
@@ -688,7 +709,7 @@ body.dark-mode .all-operators-table th.today-column {
   color: #fecaca;
 }
 body.dark-mode .all-operators-table td.today-column {
-  box-shadow: inset 0 0 0 2px #f87171;
+  box-shadow: inset 0 0 0 2px #ff0000;
 }
 body.dark-mode .all-operators-wrap {
   border-color: var(--border);
